@@ -42,6 +42,10 @@ func (j *JSONSource) Get(key string) ([]string, error) {
 			return nil, err
 		}
 	}
+	_, ok := j.m[key]
+	if !ok {
+		return nil, ErrMissing
+	}
 	values, err := stringifySlice(j.m[key])
 	if err != nil {
 		return nil, errors.Wrap(err, "error parsing JSON config")
