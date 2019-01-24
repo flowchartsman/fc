@@ -17,8 +17,8 @@ type PlainSource struct {
 	m        map[string][]string
 }
 
-// NewPlainSource defines a new configuration source from the specified file
-func NewPlainSource(filename string) *PlainSource {
+// WithConfigFile defines a new configuration source from the specified file
+func WithConfigFile(filename string) *PlainSource {
 	return &PlainSource{
 		filename: filename,
 	}

@@ -26,8 +26,8 @@ Then, call fc.Parse instead of fs.Parse.
 
 ```go
    fc.Parse(fs,
-        fc.NewEnvSource("MY_PROGRAM"),
-        fc.NewPlainSource("myprogram.conf"),
+        fc.WithEnv("MY_PROGRAM"),
+        fc.WithConfigFile("myprogram.conf"),
    )
 ```
 
@@ -43,7 +43,7 @@ refresh 30s
 debug true
 ```
 ## JSON files
-`NewJsonSource(filename string)` is also provided to decode JSON files, which
+`WithJSONFile(filename string)` is also provided to decode JSON files, which
 should be a single JSON object, with keys corresponding to the flag names:
 
 ```json

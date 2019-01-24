@@ -18,8 +18,8 @@ type JSONSource struct {
 	m        map[string]interface{}
 }
 
-// NewJSONSource defines a new configuration source from the specified JSON file
-func NewJSONSource(filename string) *JSONSource {
+// WithJSONFile defines a new configuration source from the specified JSON file
+func WithJSONFile(filename string) *JSONSource {
 	return &JSONSource{
 		filename: filename,
 	}

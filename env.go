@@ -13,8 +13,9 @@ type EnvSource struct {
 	prefix string
 }
 
-// NewEnvSource returns a new source that pulls from os.ENV with the specified prefix
-func NewEnvSource(prefix string) *EnvSource {
+// WithEnv returns a new source that pulls from os.ENV with the specified
+// prefix, or from the entire environment if no prefix is provided
+func WithEnv(prefix string) *EnvSource {
 	return &EnvSource{prefix: strings.ToUpper(prefix) + "_"}
 }
 
