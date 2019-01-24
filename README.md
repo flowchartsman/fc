@@ -4,9 +4,7 @@ fc ("FlagConf") is a flexible configuration library using the stdlib's
 [flag.FlagSet](https://golang.org/pkg/flag#FlagSet) as its source of
 definitions
 ([rationale](https://peter.bourgon.org/go-for-industrial-programming/#program-configuration)).
-It's based on [Peter Bourgon's ff
-library](https://github.com/peterbourgon/ff/blob/master/README.md), but allows
-you to plug in any source of configuration you like, in any order.
+It's functionally based on the [ff library](https://github.com/peterbourgon/ff/blob/master/README.md), but with a more generic architecture that allows you to plug in any source of configuration you like, in any order.
 
 ## Usage
 
