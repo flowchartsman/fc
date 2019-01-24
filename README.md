@@ -6,6 +6,8 @@ definitions
 ([rationale](https://peter.bourgon.org/go-for-industrial-programming/#program-configuration)).
 It's functionally based on the [ff library](https://github.com/peterbourgon/ff/blob/master/README.md), but with a more generic architecture that allows you to plug in any source of configuration you like, in any order.
 
+This software is currently *alpha*. It needs tests. The API might need tweaking. Suggestions (and PRs of course) very welcome.
+
 ## Usage
 
 Define a flag.FlagSet in your func main.
