@@ -44,7 +44,7 @@ debug true
 ```
 
 ## Flag-driven config
-You can also specify the config file to use with a flag:
+You can also use the value of a flag to configure certain sources. In the example below, we use the `config` flag to specify the config file to use.
 
 ```go
 func main() {
