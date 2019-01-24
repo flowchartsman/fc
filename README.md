@@ -42,6 +42,27 @@ listen-addr localhost:8080
 refresh 30s
 debug true
 ```
+
+## Flag-driven config
+You can also specify the config file to use with a flag:
+
+```go
+func main() {
+	fs := flag.NewFlagSet("my-program", flag.ExitOnError)
+	var (
+		listenAddr = fs.String("listen-addr", "localhost:8080", "listen address")
+		refresh    = fs.Duration("refresh", 15*time.Second, "refresh interval")
+		debug      = fs.Bool("debug", false, "log debug information")
+		// Register the flag so it can be used by the source, but do not assign it
+		_          = fs.String("config", "myprogram.conf", "config file (optional)")
+	)
+
+   fc.Parse(fs,
+        fc.WithEnv("MY_PROGRAM"),
+        fc.WithConfigFileFlag("config"),
+   )
+```
+
 ## JSON files
 `WithJSONFile(filename string)` is also provided to decode JSON files, which
 should be a single JSON object, with keys corresponding to the flag names:
@@ -54,10 +75,12 @@ should be a single JSON object, with keys corresponding to the flag names:
 }
 ```
 
+`WithJSONFlagFile(flag string)` is the flag-driven version of this source.
+
 ## Adding configuration sources
 In order to keep non-stdlib dependencies to a minimum, other configurations
 sources should exist in other repositories, and should provide types which
-correspond to the `fc.Source` interface:
+implement the `fc.Source` interface:
 
 ```go
 type Source interface {
@@ -75,6 +98,24 @@ type Source interface {
 `Name()` and `Loc()` are intended to be used to generate informative error
 messages and to provide an extra stanza at the end of the usage message,
 detailing the configuration sources that will be pulled from.
+
+If a configuration source will use a value provided by a flag, it should
+implement the `fc.FlagSource` interface:
+
+```go
+type FlagSource interface {
+	Source
+	// FlagNeeded returns the flag this source needs to initialize itself
+	FlagNeeded() string
+	// WithFlagValue provides the value of the flag the source needs to
+	// initialize itself
+	WithFlagValue(string) error
+}
+```
+
+These sources will be initialized just after the commandline flags are
+processed, and will be passed the value provided by the flag they specify in the
+return of `FlagNeeded()`
 
 ## Other sources
 

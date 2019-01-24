@@ -24,6 +24,17 @@ type Source interface {
 	Loc(key string) string
 }
 
+// FlagSource represents a source of configuration information that initializes
+// itself from a flag defined earlier
+type FlagSource interface {
+	Source
+	// FlagNeeded returns the flag this source needs to initialize itself
+	FlagNeeded() string
+	// WithFlagValue provides the value of the flag the source needs to
+	// initialize itself
+	WithFlagValue(string) error
+}
+
 // ParseArgs parses the provided arguments with the given FlagSet and sources,
 // starting with the commandline flags and progressing through all given
 // sources in decreasing priority order until a value is found
@@ -37,6 +48,23 @@ func ParseArgs(args []string, fs *flag.FlagSet, sources ...Source) error {
 	fs.Visit(func(f *flag.Flag) {
 		found[f.Name] = true
 	})
+
+	// Initialize any FlagSources
+	for _, source := range sources {
+		if fls, ok := source.(FlagSource); ok {
+			needed := fs.Lookup(fls.FlagNeeded())
+			if needed == nil {
+				return errors.Errorf("Flag source needed flag %q, but it was not found", fls.FlagNeeded())
+			}
+			neededVal := needed.Value.String()
+			if neededVal == "" {
+				neededVal = needed.DefValue
+			}
+			if err := fls.WithFlagValue(neededVal); err != nil {
+				return errors.Wrapf(err, "cannot initialize source %q with value from flag %q", fls.Name(), fls.FlagNeeded())
+			}
+		}
+	}
 
 	fs.VisitAll(func(f *flag.Flag) {
 		// Bail if we've encountered an error

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // PlainSource is a source for config files in an extremely simple format. Each
@@ -85,6 +87,43 @@ func (p *PlainSource) init() error {
 		}
 
 		p.m[name] = strings.Split(value, ",")
+	}
+	return nil
+}
+
+// PlainFlagSource is a source that uses a flag value to define the config file to
+// pull configuration from
+type PlainFlagSource struct {
+	*PlainSource
+	flagName string
+}
+
+// WithConfigFileFlag defines a new configuration source from the configuration
+// file provided by the specified flag
+func WithConfigFileFlag(flag string) *PlainFlagSource {
+	return &PlainFlagSource{
+		PlainSource: &PlainSource{},
+		flagName:    flag,
+	}
+}
+
+// Name returns a useful name for the config file flag source for usage
+func (pf *PlainFlagSource) Name() string {
+	return fmt.Sprintf("configuration file defined by %q flag", pf.flagName)
+}
+
+// FlagNeeded returns the name of the flag that the PlainFlagSource will use to
+// determine which file to pull configuration from
+func (pf *PlainFlagSource) FlagNeeded() string {
+	return pf.flagName
+}
+
+// WithFlagValue will will set the filename the PlainFlagSource will pull
+// configuration from
+func (pf *PlainFlagSource) WithFlagValue(value string) error {
+	pf.PlainSource.filename = value
+	if value == "" {
+		return errors.New("PlainFlagSource given an empty string")
 	}
 	return nil
 }

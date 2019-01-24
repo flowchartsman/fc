@@ -73,6 +73,43 @@ func (j *JSONSource) init() error {
 	return nil
 }
 
+// JSONFlagSource is a JSONSource that uses a flag value to define the file to
+// pull configuration from
+type JSONFlagSource struct {
+	*JSONSource
+	flagName string
+}
+
+// WithJSONFileFlag defines a new configuration source from the JSON filename
+// provided by the specified flag
+func WithJSONFileFlag(flag string) *JSONFlagSource {
+	return &JSONFlagSource{
+		JSONSource: &JSONSource{},
+		flagName:   flag,
+	}
+}
+
+// Name returns a useful name for the JSON flag source for usage
+func (jf *JSONFlagSource) Name() string {
+	return fmt.Sprintf("JSON configuration file defined by %q flag", jf.flagName)
+}
+
+// FlagNeeded returns the name of the flag that the JSONFlagSource will use to
+// determine which file to pull configuration from
+func (jf *JSONFlagSource) FlagNeeded() string {
+	return jf.flagName
+}
+
+// WithFlagValue will will set the filename the JSONFlagSource will pull
+// configuration from
+func (jf *JSONFlagSource) WithFlagValue(value string) error {
+	jf.JSONSource.filename = value
+	if value == "" {
+		return errors.New("JSONFlagSource given an empty string")
+	}
+	return nil
+}
+
 func stringifySlice(val interface{}) ([]string, error) {
 	if vals, ok := val.([]interface{}); ok {
 		ss := make([]string, len(vals))
