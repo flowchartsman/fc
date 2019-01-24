@@ -24,12 +24,12 @@ type Source interface {
 	Loc(key string) string
 }
 
-// Parse parses a FlagSet and assigns values, starting with commandline flags
-// and progressing through all given sources in decreasing priority order until
-// a value is found
-func Parse(fs *flag.FlagSet, sources ...Source) error {
+// ParseArgs parses the provided arguments with the given FlagSet and sources,
+// starting with the commandline flags and progressing through all given
+// sources in decreasing priority order until a value is found
+func ParseArgs(args []string, fs *flag.FlagSet, sources ...Source) error {
 	fs.Usage = fcUsage(fs, sources)
-	err := fs.Parse(os.Args[1:])
+	err := fs.Parse(args)
 	if err != nil {
 		return err
 	}
@@ -67,6 +67,11 @@ func Parse(fs *flag.FlagSet, sources ...Source) error {
 	})
 
 	return err
+}
+
+// Parse is a convenient alias for ParseArgs targeting os.Args[1:]
+func Parse(fs *flag.FlagSet, sources ...Source) error {
+	return ParseArgs(os.Args[1:], fs, sources...)
 }
 
 func fcUsage(fs *flag.FlagSet, sources []Source) func() {
